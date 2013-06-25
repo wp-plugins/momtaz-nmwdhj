@@ -36,6 +36,33 @@ Momtaz Nmwdhj is keeping things as small and light as possible while still allow
 1. Upload and install the plugin
 2. Use the rich API to powerfull your theme/plugin.
 
+== Basic Usage ==
+
+You can use this plugin in many ways depending on your needs, this examples only for the most common usage cases.
+
+= -Creating an element =
+
+`
+// Creating the element object.
+$element = Momtaz_Nmwdhj::create_element( 'input_text' )
+                ->set_value( get_bloginfo( 'name' ) )
+                ->set_name( 'blog_name' );
+
+// Output the element markup.
+$element->output();
+`
+
+= -Decorating an element =
+
+`
+// Decorating the element with label.
+$element = Momtaz_Nmwdhj::decorate_element( 'label', $element )
+                ->set_label( __( 'Blog name:' ) );
+
+// Output the decorated element markup.
+$element->output();
+`
+
 == Frequently Asked Questions ==
 
 = What this plugin for? =
