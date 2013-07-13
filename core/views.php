@@ -166,9 +166,7 @@ class Momtaz_Nmwdhj_Views {
         if ( ! class_exists( $class_name, $autoload ) )
             return false;
 
-        $parents = class_parents( $class_name, $autoload );
-
-        if ( ! $parents || ! in_array( 'Momtaz_Nmwdhj_View', (array) $parents ) )
+        if ( ! is_subclass_of( $class_name, 'Momtaz_Nmwdhj_View' ) )
             return false;
 
         return true;

@@ -146,9 +146,7 @@ class Momtaz_Nmwdhj_Decorators {
         if ( ! class_exists( $class_name, $autoload ) )
             return false;
 
-        $parents = class_parents( $class_name, $autoload );
-
-        if ( ! $parents || ! in_array( 'Momtaz_Nmwdhj_Decorator', (array) $parents ) )
+        if ( ! is_subclass_of( $class_name, 'Momtaz_Nmwdhj_Decorator' ) )
             return false;
 
         return true;
@@ -209,7 +207,7 @@ abstract class Momtaz_Nmwdhj_Decorator implements Momtaz_Nmwdhj_Element {
     /*** Magic Methods ********************************************************/
 
     /**
-     *
+     * A magic method to redirect the methods calls to the element object.
      *
      * @throws Exception
      * @since 1.0
@@ -224,7 +222,7 @@ abstract class Momtaz_Nmwdhj_Decorator implements Momtaz_Nmwdhj_Element {
     } // end __call()
 
     /**
-     *
+     * The default Decorator constructor.
      *
      * @since 1.0
      */

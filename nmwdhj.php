@@ -3,14 +3,19 @@
  * Plugin Name: Momtaz Nmwdhj
  * Plugin URI: http://nashwan-d.com
  * Description: An API for creating forms elements via code.
- * Author Name: Nashwan Doaqan
+ * Author: Nashwan Doaqan
  * Author URI: http://nashwan-d.com
- * Version: 1.0
+ * Version: 1.2 Alpha
  *
  * License: GNU General Public License v2.0
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  * Copyright (c) 2013 - 2014 Nashwan Doaqan.  All rights reserved.
  */
+
+// Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+if ( ! class_exists( 'Momtaz_Nmwdhj' ) ) :
 
 /**
  * The Momtaz Nmwdhj plugin main class.
@@ -20,17 +25,17 @@
 final class Momtaz_Nmwdhj {
 
     /**
-     * Module version.
+     * Plugin version.
      *
      * @var float
      * @since 1.0
      */
-    const VERSION = '1.0';
+    const VERSION = '1.2-alpha';
 
     // Setup
 
     /**
-     * Initialize the Momtaz Nmwdhj module.
+     * Initialize the Momtaz Nmwdhj plugin.
      *
      * @since 1.0
      * @return void
@@ -149,7 +154,7 @@ final class Momtaz_Nmwdhj {
     // Paths
 
     /**
-     * Get the absolute system path to the module directory, or a file therein.
+     * Get the absolute system path to the plugin directory, or a file therein.
      *
      * @param string $path
      * @return string
@@ -192,14 +197,17 @@ function momtaz_nmwdhj_class_loader( $class_name ) {
         'Momtaz_Nmwdhj_Decorators' => 'core/decorators.php',
 
         // Attributes
+        'Momtaz_Nmwdhj_Attribute' => 'core/attributes.php',
         'Momtaz_Nmwdhj_Attributes' => 'core/attributes.php',
+        'Momtaz_Nmwdhj_ClassAttribute' => 'core/attributes.php',
+        'Momtaz_Nmwdhj_SimpleAttribute' => 'core/attributes.php',
 
     );
 
     // Check if the class exists in $core_classes .
     if ( isset( $core_classes[ $class_name ] ) ) {
 
-        require Momtaz_Nmwdhj::get_path( $core_classes[ $class_name ] );
+        require_once Momtaz_Nmwdhj::get_path( $core_classes[ $class_name ] );
 
         return true;
 
@@ -241,3 +249,5 @@ if ( defined( 'MOMTAZ_NMWDHJ_LATE_LOAD' ) ) {
     Momtaz_Nmwdhj::init();
 
 } // end if
+
+endif; // class_exists check

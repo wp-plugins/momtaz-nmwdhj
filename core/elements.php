@@ -1,5 +1,13 @@
 <?php
 /**
+ * The element interface.
+ *
+ * @since 1.0
+ */
+ interface Momtaz_Nmwdhj_Element {
+ } // end Interface Momtaz_Nmwdhj_Element
+
+/**
  * The Momtaz Nmwdhj Elements class.
  *
  * @since 1.0
@@ -35,23 +43,18 @@ class Momtaz_Nmwdhj_Elements {
 
             $elements = self::get();
 
-            if ( isset( $elements[ $key ] ) ) {
-
+            if ( isset( $elements[ $key ] ) )
                 return $elements[ $key ];
 
-            } else {
+            foreach ( $elements as $element ) {
 
-                foreach ( $elements as $element ) {
+                if ( in_array( $key, (array) $element['aliases'] ) ) {
 
-                    if ( in_array( $key, (array) $element['aliases'] ) ) {
+                    return $element;
 
-                        return $element;
+                } // end if
 
-                    } // end if
-
-                } // end foreach
-
-            } // end if
+            } // end foreach
 
         } // end if
 
@@ -201,17 +204,15 @@ class Momtaz_Nmwdhj_Elements {
      * @since 1.0
      * @return boolean
      */
-    public static function check_class( $class_name ) {
+    public static function check_class( $class_name, $autoload = true ) {
 
         if ( empty( $class_name ) )
             return false;
 
-        if ( ! class_exists( $class_name ) )
+        if ( ! class_exists( $class_name, $autoload ) )
             return false;
 
-        $implements = class_implements( $class_name );
-
-        if ( ! $implements || ! in_array( 'Momtaz_Nmwdhj_Element', (array) $implements ) )
+        if ( ! is_subclass_of( $class_name, 'Momtaz_Nmwdhj_Element' ) )
             return false;
 
         return true;
@@ -437,25 +438,40 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
     } // end get_value_callback()
 
     /**
-     * Set the element value callback.
+     * Set a value callback.
      *
      * @since 1.0
      * @return Momtaz_Nmwdhj_SimpleElement
      */
-    public function set_value_callback( $name, array $args = array() ) {
+    public function set_value_callback( $callback ) {
 
-        $this->value_callback = array();
+        $params = array_slice( func_get_args(), 1 );
+        $this->set_value_callback_array( $callback, $params );
 
-        if ( is_callable( $name, true ) ) {
+        return $this;
 
-            $this->value_callback['name'] = $name;
-            $this->value_callback['args'] = $args;
+    } // end set_value_callback()
+
+    /**
+     * Set a value callback with an array of parameters.
+     *
+     * @since 1.1
+     * @return Momtaz_Nmwdhj_SimpleElement
+     */
+    public function set_value_callback_array( $callback, array $param ) {
+
+        if ( is_callable( $callback ) ) {
+
+            $this->value_callback = array(
+                'name' => $callback,
+                'args' => $param,
+            );
 
         } // end if
 
         return $this;
 
-    } // end set_value_callback()
+    } // end set_value_callback_array()
 
     // The Special Attributes
 
@@ -578,6 +594,16 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
     public function get_attr( $key, $def = '' ) {
         return $this->get_atts_obj()->get_attr( $key, $def );
     } // end get_attr()
+
+    /**
+     * Get an attribute object.
+     *
+     * @since 1.0
+     * @return string
+     */
+    public function get_attr_obj( $key ) {
+        return $this->get_atts_obj()->get_attr_obj( $key );
+    } // end get_attr_obj()
 
     /**
      * Check for an attribute existence.
@@ -774,15 +800,6 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
     } // end remove_option()
 
 } // end Class Momtaz_Nmwdhj_Element
-
-/**
- * The element interface.
- *
- * @since 1.0
- */
- interface Momtaz_Nmwdhj_Element {
-     // TODO: Complete this interface.
- } // end Interface Momtaz_Nmwdhj_Element
 
 /**
  * Get the element output.
