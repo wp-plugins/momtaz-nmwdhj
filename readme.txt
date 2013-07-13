@@ -112,11 +112,11 @@ So I started to build my own plug-in, I focused to made it easy,simple and fast!
 == Changelog ==
 
 = 1.1 =
-* implement an easy methods to Add/Remove/Check the CSS 'class' attribute.
-* implement a smarter attributes system, you can now store the attributes as an objects.
-* Replace any use for the deprecated PHP function is_a() and by the instanceof operator.
-* Enhance the check_class() methods with the PHP function is_subclass_of() for a better performance.
-* **Breaking Changes:** The behavior of Momtaz_Nmwdhj_SimpleElement::set_value_callback() has changed, it now accept an optional list of permeates like the call_user_func() function, if you want to pass an array of arguments please use the new method Momtaz_Nmwdhj_SimpleElement::set_value_callback_array().
+* Enhance the check_class() method with the PHP function is_subclass_of().
+* implement some easy methods to Add/Remove/Check the CSS 'class' attribute.
+* implement a smart attributes system, you can now store the attributes as an objects.
+* Replace any use for the deprecated PHP function is_a() by the instanceof operator.
+* **Breaking Changes:** The behavior of set_value_callback() method has changed, it's now accept an optional list of permeates, if you want to pass an array of arguments please use the new method set_value_callback_array().
 
 = 1.0 =
 * The Initial version.
