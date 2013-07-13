@@ -3,7 +3,7 @@ Contributors: alex-ye
 Tags: forms, api, html, settings, options, momtaz
 Requires at least: 3.1
 Tested up to: 3.6
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ Momtaz Nmwdhj is an API for creating forms elements via code.
 == Description ==
 
 = Important Notes: =
-1. This plugin requires PHP 5.3.x
+1. This plugin requires at least PHP 5.3.x .
 2. This plugin is for developers, not general users.
 
 Momtaz Nmwdhj is an API for creating, editing and rendering forms programatically.
@@ -26,15 +26,74 @@ Momtaz Nmwdhj is keeping things as small and light as possible while still allow
 * Throw the PHP Exceptions when needed.
 * Add more WP filters and actions when needed.
 * Develop a better and easier way to decorate an element.
-* Implement some methods to control the 'class' attribute.
 * Implement Momtaz_Nmwdhj_Form and Momtaz_Nmwdhj_Fieldset classes.
-* Register some WP shortcodes to create the forms elements easily.
 * Implement a smarter way to late-translate the titles and labels using the WP l18n functions.
 
 == Installation ==
 
 1. Upload and install the plugin
 2. Use the rich API to powerfull your theme/plugin.
+
+== Basic Usage ==
+
+You can use this plugin in many ways depending on your needs, this examples only for the most common usage cases.
+
+= -Creating an element =
+
+`
+// Creating the element object by the OOP style.
+$element = Momtaz_Nmwdhj::create_element( 'input_text' )
+                ->set_value_callback( 'get_bloginfo', 'name' )
+                ->set_name( 'blog_name' );
+
+// Another Way: Creating the element object by the Array style.
+$element = Momtaz_Nmwdhj::create_element( 'input_text', array(
+    'value' => get_bloginfo( 'name' ),
+    'name' => 'blog_name',
+) );
+
+// Output the element markup.
+$element->output();
+`
+
+= -Creating a list of elements =
+
+`
+// Creating a list of elements.
+$elements = Momtaz_Nmwdhj::create_elements( array(
+    array(
+        'name' => 'name',
+        'key' => 'input_text',
+    ),
+    array(
+        'name' => 'email',
+        'key' => 'input_email',
+    ),
+    array(
+        'name' => 'subject',
+        'key' => 'input_text',
+    ),
+    array(
+        'key' => 'textarea',
+        'name' => 'message',
+    ),
+) );
+
+// Output the elements markup.
+foreach( $elements as $element )
+    $element->output();
+`
+
+= -Decorating an element =
+
+`
+// Decorating an element with label.
+$element = Momtaz_Nmwdhj::decorate_element( 'label', $element )
+                ->set_label( __( 'Blog name:' ) );
+
+// Output the decorated element markup.
+$element->output();
+`
 
 == Frequently Asked Questions ==
 
@@ -51,6 +110,15 @@ I searched for a good/clean/easy library to build the HTML forms easily, to make
 So I started to build my own plug-in, I focused to made it easy,simple and fast!
 
 == Changelog ==
+
+= 1.1 =
+* implement an easy methods to Add/Remove/Check the CSS 'class' attribute.
+* implement a smarter attributes system, you can now store the attributes as an objects.
+* Remove any use for the deprecated PHP function is_a() and replace it with the instanceof operator.
+* Enhance the check_class() methods with the PHP function is_subclass_of() for a better performance.
+
+Breaking Changes:
+* The behavior of Momtaz_Nmwdhj_SimpleElement::set_value_callback() has changed, it now accept an optional list of permeates like the call_user_func() function, if you want to pass an array of arguments please use the new method Momtaz_Nmwdhj_SimpleElement::set_value_callback_array().
 
 = 1.0 =
 * The Initial version.
