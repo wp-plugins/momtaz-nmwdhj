@@ -117,7 +117,7 @@ So I started to build my own plug-in, I focused to made it easy,simple and fast!
 * implement a smart attributes system, you can now store the attributes as an objects.
 * Replace any use for the deprecated PHP function is_a() by the instanceof operator.
 
-= Breaking Changes: ==
+= Breaking Changes: =
 * The behavior of set_value_callback() method has changed, it's now accept an optional list of permeates, if you want to pass an array of arguments please use the new method set_value_callback_array().
 
 = 1.0 =
