@@ -1,263 +1,15 @@
 <?php
-/**
- * The element interface.
- *
- * @since 1.0
- */
- interface Momtaz_Nmwdhj_Element {
- } // end Interface Momtaz_Nmwdhj_Element
-
-/**
- * The Momtaz Nmwdhj Elements class.
- *
- * @since 1.0
- */
-class Momtaz_Nmwdhj_Elements {
-
-    /*** Properties ***********************************************************/
-
-    /**
-     * Elements list.
-     *
-     * @since 1.0
-     * @var array
-     */
-    protected static $elements = array();
-
-
-    /*** Methods **************************************************************/
-
-    // Getters
-
-    /**
-     * Get an element by key.
-     *
-     * @since 1.0
-     * @return array
-     */
-    public static function get_by_key( $key ) {
-
-        $key = sanitize_key( $key );
-
-        if ( ! empty( $key ) ) {
-
-            $elements = self::get();
-
-            if ( isset( $elements[ $key ] ) )
-                return $elements[ $key ];
-
-            foreach ( $elements as $element ) {
-
-                if ( in_array( $key, (array) $element['aliases'] ) ) {
-
-                    return $element;
-
-                } // end if
-
-            } // end foreach
-
-        } // end if
-
-        return array();
-
-    } // end get_by_key()
-
-    /**
-     * Retrieve a list of registered elements.
-     *
-     * @since 1.0
-     * @return array
-     */
-    public static function get( array $args = null, $operator = 'AND' ) {
-        return wp_list_filter( self::$elements, $args, $operator );
-    } // end get()
-
-    // Register/Deregister
-
-    /**
-     * Register an element.
-     *
-     * @since 1.0
-     * @return boolean
-     */
-    public static function register( $key, array $args ) {
-
-        $args['key'] = sanitize_key( $key );
-
-        if ( empty( $args['key'] ) )
-            return false;
-
-        $args = wp_parse_args( $args, array(
-            'aliases' => array(),
-            'class_name' => '',
-            'class_path' => '',
-        ) );
-
-        if ( empty( $args['class_name'] ) )
-            return false;
-
-        if ( ! file_exists( $args['class_path'] ) )
-            return false;
-
-        $args['aliases'] = (array) $args['aliases'];
-        array_walk( $args['aliases'], 'sanitize_key' );
-
-        // Register the element.
-        self::$elements[ $args['key'] ] = $args;
-
-        return true;
-
-    } // end register()
-
-    /**
-     * Register the default elements.
-     *
-     * @since 1.0
-     * @return void
-     */
-    public static function register_defaults() {
-
-        self::register( 'button', array(
-            'class_name' => 'Momtaz_Nmwdhj_Element_Button',
-            'class_path' => Momtaz_Nmwdhj::get_path( 'elements/Button.php' ),
-            'aliases' => array( 'button_submit', 'button_reset' ),
-        ) );
-
-        self::register( 'select', array(
-            'class_name' => 'Momtaz_Nmwdhj_Element_Select',
-            'class_path' => Momtaz_Nmwdhj::get_path( 'elements/Select.php' ),
-        ) );
-
-        self::register( 'textarea', array(
-            'class_name' => 'Momtaz_Nmwdhj_Element_Textarea',
-            'class_path' => Momtaz_Nmwdhj::get_path( 'elements/Textarea.php' ),
-        ) );
-
-        self::register( 'wp_editor', array(
-            'class_name' => 'Momtaz_Nmwdhj_Element_WP_Editor',
-            'class_path' => Momtaz_Nmwdhj::get_path( 'elements/WP_Editor.php' ),
-        ) );
-
-        self::register( 'checkbox', array(
-                'class_name' => 'Momtaz_Nmwdhj_Element_Checkbox',
-                'class_path' => Momtaz_Nmwdhj::get_path( 'elements/Checkbox.php' ),
-                'aliases' => array( 'input_checkbox' ),
-            )
-        );
-
-        self::register( 'checkboxes', array(
-                'class_name' => 'Momtaz_Nmwdhj_Element_Checkboxes',
-                'class_path' => Momtaz_Nmwdhj::get_path( 'elements/Checkboxes.php' ),
-                'aliases' => array( 'multi_checkbox' ),
-            )
-        );
-
-        self::register( 'input', array(
-                'class_name' => 'Momtaz_Nmwdhj_Element_Input',
-                'class_path' => Momtaz_Nmwdhj::get_path( 'elements/Input.php' ),
-                'aliases' => array(
-                    'input_text', 'input_url', 'input_email', 'input_range', 'input_search', 'input_date', 'input_file',
-                    'input_hidden', 'input_number', 'input_password', 'input_color', 'input_submit', 'input_week',
-                    'input_time', 'input_radio', 'input_month', 'input_image',
-                ),
-            )
-        );
-
-    } // end register_defaults()
-
-    /**
-     * Remove a registered element.
-     *
-     * @since 1.0
-     * @return boolean
-     */
-    public static function deregister( $key ) {
-
-        $key = sanitize_key( $key );
-
-        if ( empty( $key ) )
-            return false;
-
-        if ( ! isset( self::$elements[ $key ] ) ) {
-
-            foreach ( self::$elements as &$element ) {
-
-                $element['aliases'] = array_diff( (array) $element['aliases'], array( $key ) );
-
-            } // end foreach
-
-        } else {
-
-            unset( self::$elements[ $key ] );
-
-        } // end if
-
-        return true;
-
-    } // end deregister()
-
-    // Checks
-
-    /**
-     * Check element class.
-     *
-     * @since 1.0
-     * @return boolean
-     */
-    public static function check_class( $class_name, $autoload = true ) {
-
-        if ( empty( $class_name ) )
-            return false;
-
-        if ( ! class_exists( $class_name, $autoload ) )
-            return false;
-
-        if ( ! is_subclass_of( $class_name, 'Momtaz_Nmwdhj_Element' ) )
-            return false;
-
-        return true;
-
-    } // end check_class()
-
-    // Loaders
-
-    /**
-     * Load element class file.
-     *
-     * @since 1.0
-     * @return boolean
-     */
-    public static function load_class( $class_name ) {
-
-        if ( empty( $class_name ) )
-            return false;
-
-        if ( ( $element = self::get( array( 'class_name' => $class_name ), 'OR' ) ) ) {
-
-            $element = reset( $element );
-
-            if ( ! empty( $element['class_path'] ) && file_exists( $element['class_path'] ) ) {
-
-                require $element['class_path'];
-
-                return true;
-
-            } // end if
-
-        } // end if
-
-        return false;
-
-    } // end load_class()
-
-} // end Class Momtaz_Nmwdhj_Elements
+namespace Nmwdhj\Elements;
+use Nmwdhj\Attributes\Attributes;
+use Nmwdhj\Exception;
+use Nmwdhj\Views;
 
 /**
  * The abstract simple element class.
  *
  * @since 1.0
  */
-abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
+abstract class Base implements Element {
 
     /*** Properties ***********************************************************/
 
@@ -278,18 +30,10 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
     protected $value;
 
     /**
-     * Element view key.
-     *
-     * @since 1.0
-     * @var string
-     */
-    protected $view_key;
-
-    /**
      * Element attributes object.
      *
      * @since 1.0
-     * @var Momtaz_Nmwdhj_Attributes
+     * @var Nmwdhj\Attributes\Attributes
      */
     protected $attributes;
 
@@ -317,7 +61,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      *
      * @since 1.0
      */
-    public function __construct( $key, array $properties = null ) {
+    public function __construct( $key = '', array $properties = null ) {
 
         $this->set_key( $key );
 
@@ -351,10 +95,6 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
                         $this->set_options( $value );
                         break;
 
-                    case 'view_key':
-                        $this->set_view_key( $value );
-                        break;
-
                 } // end Switch
 
             } // end foreach
@@ -382,7 +122,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set the element key.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     protected function set_key( $key ) {
 
@@ -420,7 +160,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set the element value.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function set_value( $value ) {
         $this->value = $value;
@@ -441,7 +181,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set a value callback.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function set_value_callback( $callback ) {
 
@@ -456,7 +196,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set a value callback with an array of parameters.
      *
      * @since 1.1
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function set_value_callback_array( $callback, array $param ) {
 
@@ -501,7 +241,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set the element ID attribute.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function set_ID( $value ) {
         $this->set_attr( 'id', $value );
@@ -522,35 +262,12 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set the element name attribute.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function set_name( $value ) {
         $this->set_attr( 'name', $value );
         return $this;
     } // end set_name()
-
-    // View Key
-
-    /**
-     * Get the element view key.
-     *
-     * @since 1.0
-     * @return string
-     */
-    public function get_view_key() {
-        return $this->view_key;
-    } // end get_view_key()
-
-    /**
-     * Set the element view key.
-     *
-     * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
-     */
-    public function set_view_key( $key ) {
-        $this->view_key = $key;
-        return $this;
-    } // end set_view_key()
 
     // Output
 
@@ -561,7 +278,24 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * @return string
      */
     public function get_output() {
-        return Momtaz_Nmwdhj::view_element( $this );
+
+	$view = Views\Manager::get_by_key( $this->get_key() );
+
+	if ( empty( $view ) ) {
+
+	    if ( ( $element = Manager::get_by_key( $this->get_key() ) ) )
+		$view = Views\Manager::get_by_key( $element->key );
+
+	    if ( empty( $view ) )
+		throw new Exception( 'invalid_view' );
+
+	} // end if
+
+	if ( ! Views\Manager::check_class( $view->class_name ) )
+	    throw new Exception( 'invalid_view_class' );
+
+	return call_user_func( new $view->class_name, $this );
+
     } // end get_output()
 
     /**
@@ -619,7 +353,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set many attributes at once.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function set_atts( array $atts ) {
 
@@ -634,7 +368,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set an attribute value.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function set_attr( $key, $value ) {
         $this->get_atts_obj()->set_attr( $key, $value );
@@ -645,7 +379,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Remove many attributes at once.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function remove_atts( array $keys ) {
 
@@ -660,7 +394,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Remove an attribute.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function remove_attr( $key ) {
         $this->get_atts_obj()->remove_attr( $key );
@@ -681,12 +415,12 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Get the attributes object.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_Attributes
+     * @return Nmwdhj\Attributes\Attributes
      */
     protected function get_atts_obj() {
 
         if ( is_null( $this->attributes ) )
-            $this->attributes = new Momtaz_Nmwdhj_Attributes();
+            $this->attributes = new Attributes();
 
         return $this->attributes;
 
@@ -729,7 +463,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set the element options.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function set_options( $options ) {
 
@@ -744,7 +478,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Set a specified option.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function set_option( $option, $value ) {
 
@@ -762,7 +496,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Remove all/specified options.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function remove_options( $options = '' ) {
 
@@ -785,7 +519,7 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
      * Remove a specified option.
      *
      * @since 1.0
-     * @return Momtaz_Nmwdhj_SimpleElement
+     * @return Nmwdhj\Elements\Base
      */
     public function remove_option( $option ) {
 
@@ -799,19 +533,4 @@ abstract class Momtaz_Nmwdhj_SimpleElement implements Momtaz_Nmwdhj_Element {
 
     } // end remove_option()
 
-} // end Class Momtaz_Nmwdhj_Element
-
-/**
- * Get the element output.
- *
- * @return string
- * @since 1.0
- */
-function momtaz_nmwdhj_get_element_output( $element ) {
-
-    if ( $element instanceof Momtaz_Nmwdhj_Element )
-        return $element->get_output();
-
-    return $element;
-
-} // end momtaz_nmwdhj_get_element_output()
+} // end Class Base
